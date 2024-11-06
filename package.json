@@ -32,6 +32,7 @@
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.20.4",
+        "@aws-sdk/client-bedrock-runtime": "^3.682.0",
         "@aws-sdk/client-dynamodb": "^3.554.0",
         "@aws-sdk/client-s3": "^3.685.0",
         "@aws-sdk/lib-dynamodb": "^3.554.0",
