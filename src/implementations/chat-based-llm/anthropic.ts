@@ -17,8 +17,7 @@ export class AnthropicChatBasedLLM extends ChatBasedLLMInterface {
             cache: new NoCache(),
             ...props,
         });
-        this.apiKey = props.apiKey || (process && process.env.ANTHROPIC_API_KEY!),
-        this.modelId = props.modelId || this.modelId;
+        (this.apiKey = props.apiKey || (process && process.env.ANTHROPIC_API_KEY!)), (this.modelId = props.modelId || this.modelId);
     }
 
     protected getName(): string {
@@ -40,11 +39,11 @@ export class AnthropicChatBasedLLM extends ChatBasedLLMInterface {
                     content: message.text,
                 })),
                 max_tokens: 3000,
-            })
-        })
+            }),
+        });
 
         const responseJson = await response.json();
-        
+
         return {
             text: responseJson.content[0].text,
         };

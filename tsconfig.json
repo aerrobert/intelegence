@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "target": "es2017",
-        "module": "ESNext",
         "lib": ["ES2020", "dom"],
         "declaration": true,
         "outDir": "./lib/",
@@ -9,6 +8,8 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "sourceMap": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "forceConsistentCasingInFileNames": true
     },
     "include": ["src/**/*.ts", "user/**/*.ts", "test/**/*.ts"]

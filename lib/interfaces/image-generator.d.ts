@@ -1,6 +1,6 @@
 import { Invoker, InvokerProps } from '../execution/invoker';
 import { Saver, SaverResult } from '../execution/saver';
-import { HyperExecution } from '../framework/hyper-execution';
+import { Execution } from '../framework/execution';
 export interface ImageGeneratorInput {
     prompt: string;
 }
@@ -13,6 +13,6 @@ export interface ImageGeneratorAIInterfaceProps extends InvokerProps<SaverResult
 export declare class ImageGeneratorAIInterface extends Invoker<ImageGeneratorInput, SaverResult> {
     private saver;
     constructor(props: ImageGeneratorAIInterfaceProps);
-    protected onInvoke(input: ImageGeneratorInput, execution: HyperExecution): Promise<SaverResult>;
+    protected onInvoke(input: ImageGeneratorInput, execution: Execution): Promise<SaverResult>;
     protected onGenerateImage(input: ImageGeneratorInput): Promise<ImageGeneratorResult>;
 }

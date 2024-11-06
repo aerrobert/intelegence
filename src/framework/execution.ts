@@ -1,13 +1,13 @@
-import { BestEffortJsonParser } from '../utils/parser';
 import { ChatContext, ChatMessage } from './chat-context';
-import { Hyper } from './hyper';
-import { deepMergeTogether } from '../utils/deepMerge';
+import { Intelegence } from './intelegence';
 import { SaverResult } from '../execution/saver';
 import { LLMChatResponse } from '../interfaces/chat-based-llm';
-import { randomId } from '../utils/random';
 import { ImageToImageGeneratorInput } from '../interfaces/image-to-image-generator';
+import { randomId } from '../utils/random';
+import { deepMergeTogether } from '../utils/deepMerge';
+import { BestEffortJsonParser } from '../utils/parser';
 
-export interface HyperExecutionResultAsset {
+export interface ExecutionResultAsset {
     type: 'image';
     accessUrl: string;
 }
@@ -18,20 +18,19 @@ export interface ExecutionResult {
     end: Date;
     state: any;
     messages: ChatMessage[];
-    assets: Record<string, HyperExecutionResultAsset>;
+    assets: Record<string, ExecutionResultAsset>;
 }
 
-export class HyperExecution {
-
+export class Execution {
     private id: string = randomId();
     private startedAt: Date = new Date();
     private runningState: any = {};
     private chatContext: ChatContext = new ChatContext([]);
-    private resultAssets: Record<string, HyperExecutionResultAsset> = {};
+    private resultAssets: Record<string, ExecutionResultAsset> = {};
 
-    private rootTaskId: string
+    private rootTaskId: string;
 
-    constructor(private hyper: Hyper) {
+    constructor(private hyper: Intelegence) {
         this.rootTaskId = this.tasks.startTask('Execution');
     }
 
@@ -40,7 +39,7 @@ export class HyperExecution {
     get state(): any {
         return this.runningState;
     }
-    get assets(): Record<string, HyperExecutionResultAsset> {
+    get assets(): Record<string, ExecutionResultAsset> {
         return this.resultAssets;
     }
     get tasks() {
@@ -50,7 +49,7 @@ export class HyperExecution {
         return this.rootTaskId;
     }
 
-    saveAsset(id: string, asset: HyperExecutionResultAsset): void {
+    saveAsset(id: string, asset: ExecutionResultAsset): void {
         this.resultAssets[id] = asset;
     }
 
@@ -68,7 +67,7 @@ export class HyperExecution {
             state: this.state,
             messages: this.chatContext.getMessages(),
             assets: this.assets,
-        }
+        };
         const data = await this.hyper.executionDataSaver.save('execution result data', executionResult, this);
         this.tasks.endTask(this.rootTaskId);
         return { accessUrl: data.accessUrl, raw: executionResult };
@@ -77,16 +76,14 @@ export class HyperExecution {
     // Interacting with AI interfaces
 
     tell(message: string) {
-        this.chatContext = this.chatContext
-            .addUserMessage(message)
-            .addBotMessage("Understood")
+        this.chatContext = this.chatContext.addUserMessage(message).addBotMessage('Understood');
     }
 
     async consider(message: string): Promise<LLMChatResponse> {
         const fullPrompt = `
             I am now asking you the following: 
             
-            ${prompt}
+            ${message}
 
             ----
             Please respond as in sentences or pharagraphs or bullets. Do not use an explicit JSON format.
@@ -134,9 +131,7 @@ export class HyperExecution {
     }
 
     async generateImagesFromImages(inputs: ImageToImageGeneratorInput[]): Promise<SaverResult[]> {
-        return await Promise.all(
-            inputs.map(input => this.generateImageFromImage(input))
-        );
+        return await Promise.all(inputs.map(input => this.generateImageFromImage(input)));
     }
 
     async generateImage(id: string, prompt: string): Promise<SaverResult> {
@@ -145,9 +140,7 @@ export class HyperExecution {
         return image;
     }
 
-    async generateImages(prompts: { [key: string] : string }): Promise<SaverResult[]> {
-        return await Promise.all(
-            Object.entries(prompts).map(([id, prompt]) => this.generateImage(id, prompt))
-        );
+    async generateImages(prompts: { [key: string]: string }): Promise<SaverResult[]> {
+        return await Promise.all(Object.entries(prompts).map(([id, prompt]) => this.generateImage(id, prompt)));
     }
 }

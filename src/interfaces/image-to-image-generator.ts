@@ -1,6 +1,6 @@
 import { Invoker, InvokerProps } from '../execution/invoker';
 import { Saver, SaverResult } from '../execution/saver';
-import { HyperExecution } from '../framework/hyper-execution';
+import { Execution } from '../framework/execution';
 import { SaveBase64ImgOnDisk } from '../implementations/saver/save-b64-on-disk';
 
 export interface ImageToImageGeneratorInput {
@@ -25,14 +25,14 @@ export class ImageToImageGeneratorAIInterface extends Invoker<ImageToImageGenera
         this.saver = props.saver!;
     }
 
-    protected async onInvoke(input: ImageToImageGeneratorInput, execution: HyperExecution): Promise<SaverResult> {
+    protected async onInvoke(input: ImageToImageGeneratorInput, execution: Execution): Promise<SaverResult> {
         const formattedInput = {
             ...input,
-            imageUrl: input.imageUrl.split(process.cwd())[1] || input.imageUrl
-        }
+            imageUrl: input.imageUrl.split(process.cwd())[1] || input.imageUrl,
+        };
         if (formattedInput.imageUrl.startsWith('/')) formattedInput.imageUrl = formattedInput.imageUrl.slice(1);
         const image = await this.onGenerateImage(formattedInput);
-        return await this.saver.save('image-result', image, execution) 
+        return await this.saver.save('image-result', image, execution);
     }
 
     protected onGenerateImage(input: ImageToImageGeneratorInput): Promise<ImageToImageGeneratorResult> {

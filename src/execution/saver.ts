@@ -1,4 +1,4 @@
-import { HyperExecution } from "../framework/hyper-execution";
+import { Execution } from '../framework/execution';
 
 export interface SaverResult {
     raw?: any;
@@ -6,8 +6,7 @@ export interface SaverResult {
 }
 
 export class Saver<SaverInput> {
-
-    public async save(name: string, data: SaverInput, execution: HyperExecution): Promise<SaverResult> {
+    public async save(name: string, data: SaverInput, execution: Execution): Promise<SaverResult> {
         execution.tasks.logTask(execution.rootTask, `Saving ${name}`);
         return this.saveRaw(data);
     }

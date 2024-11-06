@@ -1,9 +1,9 @@
 export { Cache } from './execution/cache';
 export { Invoker, InvokerProps } from './execution/invoker';
 export { Saver } from './execution/saver';
-export { Hyper } from './framework/hyper';
+export { Intelegence } from './framework/intelegence';
 export { ChatContext, ChatMessage } from './framework/chat-context';
-export { HyperExecution, HyperExecutionResultAsset, ExecutionResult } from './framework/hyper-execution';
+export { Execution, ExecutionResultAsset, ExecutionResult } from './framework/execution';
 export { NoCache } from './implementations/cache/no-cache';
 export { CacheInLocalStorage } from './implementations/cache/cache-in-local-storage';
 export { AnthropicChatBasedLLM, AnthropicChatBasedLLMOptions } from './implementations/chat-based-llm/anthropic';
@@ -11,7 +11,7 @@ export { DalleImageGenerator, DalleImageGeneratorInput } from './implementations
 export { StabilityAiImageGenerator, StabilityAIGeneratorInput } from './implementations/image-generator/stability-ai';
 export { OpenAIChatBasedLLM, OpenAIChatBasedLLMOptions } from './implementations/chat-based-llm/openai';
 export { SaveExecutionDataInBrowser } from './implementations/saver/save-execution-to-browser';
-export { ImageGeneratorAIInterface, ImageGeneratorAIInterfaceProps, ImageGeneratorInput, ImageGeneratorResult } from './interfaces/image-generator';
+export { ImageGeneratorAIInterface, ImageGeneratorAIInterfaceProps, ImageGeneratorInput, ImageGeneratorResult, } from './interfaces/image-generator';
 export { ChatBasedLLMInterface, LLMChatResponse } from './interfaces/chat-based-llm';
-export { ImageToImageGeneratorInput, ImageToImageGeneratorResult, ImageToImageGeneratorAIInterfaceProps } from './interfaces/image-to-image-generator';
+export { ImageToImageGeneratorInput, ImageToImageGeneratorResult, ImageToImageGeneratorAIInterfaceProps, } from './interfaces/image-to-image-generator';
 export { GenerateImageCollage } from './workflows/image-collage';

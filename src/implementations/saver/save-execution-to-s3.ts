@@ -1,12 +1,11 @@
 import { Saver, SaverResult } from '../../execution/saver';
 import { randomId } from '../../utils/random';
-import { PutObjectCommand, S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
-import { ExecutionResult } from '../../framework/hyper-execution';
+import { ExecutionResult } from '../../framework/execution';
 import fs from 'fs';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 export class SaveExecutionToS3 extends Saver<ExecutionResult> {
-
-    private S3Client : S3Client
+    private S3Client: S3Client;
 
     constructor(private bucket: string) {
         super();
@@ -14,24 +13,28 @@ export class SaveExecutionToS3 extends Saver<ExecutionResult> {
     }
 
     private uploadLocalPathToRemote(localPath: string, remotePath: string) {
-        const relativePath = localPath.split(process.cwd() + '/')[1]
-        return this.S3Client.send(new PutObjectCommand({
-            Bucket: this.bucket,
-            Key: remotePath,
-            Body: fs.readFileSync(relativePath)
-        }));
+        const relativePath = localPath.split(process.cwd() + '/')[1];
+        return this.S3Client.send(
+            new PutObjectCommand({
+                Bucket: this.bucket,
+                Key: remotePath,
+                Body: fs.readFileSync(relativePath),
+            })
+        );
     }
 
     private uploadRawStringToRemote(data: string, remotePath: string) {
-        return this.S3Client.send(new PutObjectCommand({
-            Bucket: this.bucket,
-            Key: remotePath,
-            Body: data
-        }));
+        return this.S3Client.send(
+            new PutObjectCommand({
+                Bucket: this.bucket,
+                Key: remotePath,
+                Body: data,
+            })
+        );
     }
 
     private buildUrlForPath(path: string) {
-        return `https://us-west-2.console.aws.amazon.com/s3/object/${this.bucket}?region=us-west-2&bucketType=general&prefix=${path}`
+        return `https://us-west-2.console.aws.amazon.com/s3/object/${this.bucket}?region=us-west-2&bucketType=general&prefix=${path}`;
     }
 
     protected async saveRaw(value: ExecutionResult): Promise<SaverResult> {
@@ -57,8 +60,7 @@ export class SaveExecutionToS3 extends Saver<ExecutionResult> {
         await Promise.all(promises);
 
         return {
-            accessUrl: this.buildUrlForPath(path)
+            accessUrl: this.buildUrlForPath(path),
         };
-
     }
 }

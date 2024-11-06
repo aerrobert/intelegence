@@ -1,11 +1,11 @@
-import { HyperExecution } from './hyper-execution';
+import { Execution } from './execution';
 import { ChatBasedLLMInterface } from '../interfaces/chat-based-llm';
 import { ImageGeneratorAIInterface } from '../interfaces/image-generator';
 import { Saver } from '../execution/saver';
 import { ImageToImageGeneratorAIInterface } from '../interfaces/image-to-image-generator';
 import { Tasks } from './tasks';
 
-export interface HyperProps {
+export interface IntelegenceProps {
     using?: {
         chatBasedLLM?: ChatBasedLLMInterface;
         imageGenerator?: ImageGeneratorAIInterface;
@@ -19,8 +19,7 @@ export interface HyperProps {
     };
 }
 
-export class Hyper {
-
+export class Intelegence {
     // Invokers
     public readonly chatBasedLLMInvoker: ChatBasedLLMInterface;
     public readonly imageGeneratorInvoker: ImageGeneratorAIInterface;
@@ -30,19 +29,19 @@ export class Hyper {
     public readonly executionDataSaver: Saver<any>;
 
     // Task listening
-    public readonly tasks: Tasks
+    public readonly tasks: Tasks;
 
-    constructor(props: HyperProps) {
+    constructor(props: IntelegenceProps) {
         this.chatBasedLLMInvoker = props.using?.chatBasedLLM as any;
         this.imageGeneratorInvoker = props.using?.imageGenerator as any;
         this.imageToImageGeneratorInvoker = props.using?.imageToImageGenerator as any;
-        this.executionDataSaver = props.saving?.executionData as any
+        this.executionDataSaver = props.saving?.executionData as any;
         this.tasks = new Tasks({
-            onTaskEvent: props.events?.onTaskEvent as any || (() => {}),
+            onTaskEvent: (props.events?.onTaskEvent as any) || (() => {}),
         });
     }
 
-    public begin(): HyperExecution {
-        return new HyperExecution(this);
+    public begin(): Execution {
+        return new Execution(this);
     }
 }

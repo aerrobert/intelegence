@@ -1,2 +1,2 @@
-import { Hyper } from "../framework/hyper";
-export declare function GenerateImageCollage(hyper: Hyper, idea: string): Promise<void>;
+import { Intelegence } from '../framework/intelegence';
+export declare function GenerateImageCollage(hyper: Intelegence, idea: string): Promise<void>;

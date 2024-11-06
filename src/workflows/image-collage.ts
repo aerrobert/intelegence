@@ -1,7 +1,6 @@
-import { Hyper } from "../framework/hyper";
+import { Intelegence } from '../framework/intelegence';
 
-export async function GenerateImageCollage (hyper: Hyper, idea: string) {
-
+export async function GenerateImageCollage(hyper: Intelegence, idea: string) {
     const h = hyper.begin();
     h.updateState({ idea });
 
@@ -10,7 +9,7 @@ export async function GenerateImageCollage (hyper: Hyper, idea: string) {
         These images will form a coherent set of images that are related to the idea.
 
         The initial idea is: ${h.state.idea}
-    `)
+    `);
 
     await h.ask({
         prompt: `
@@ -70,7 +69,7 @@ export async function GenerateImageCollage (hyper: Hyper, idea: string) {
                     callToAction: string // describe how the user should engage with the images in your own words
                 }
             }
-        `
+        `,
     });
 
     await h.ask({
@@ -117,7 +116,8 @@ export async function GenerateImageCollage (hyper: Hyper, idea: string) {
                 },
                 title: string // the title of the collection, this should be a short, catchy title that makes use of the call to action from the concept to help engage with users. IE: "Which monster would you want as a pet?"
             }
-        `})
+        `,
+    });
 
     await h.ask({
         prompt: `
@@ -131,10 +131,10 @@ export async function GenerateImageCollage (hyper: Hyper, idea: string) {
             {
                 baseImagePrompt: string 
             }
-        `
-    })
+        `,
+    });
 
-    const baseImage = await h.generateImage('base-style-image', h.state.baseImagePrompt)
+    const baseImage = await h.generateImage('base-style-image', h.state.baseImagePrompt);
 
     await h.ask({
         prompt: `
@@ -156,10 +156,10 @@ export async function GenerateImageCollage (hyper: Hyper, idea: string) {
                     [subject-short-name: string]: string // the prompt to generate this image
                 }
             }
-        `
-    })
+        `,
+    });
 
-    await h.generateImagesFromImages(Object.values(h.state.prompts).map( a=> (
-        { imageUrl: baseImage.accessUrl, prompt: a as string, strength: 0.15 }
-    )))
+    await h.generateImagesFromImages(
+        Object.values(h.state.prompts).map(a => ({ imageUrl: baseImage.accessUrl, prompt: a as string, strength: 0.15 }))
+    );
 }

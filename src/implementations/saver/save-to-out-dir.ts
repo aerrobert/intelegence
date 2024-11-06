@@ -1,24 +1,23 @@
 import { Saver, SaverResult } from '../../execution/saver';
 import { randomId } from '../../utils/random';
-import { ExecutionResult } from '../../framework/hyper-execution';
+import { ExecutionResult } from '../../framework/execution';
 import fs from 'fs';
 
 export class SaveToOutputDirectory extends Saver<ExecutionResult> {
-
     constructor(private outputDir: string) {
         super();
 
         // Create the output directory if it doesn't exist
         fs.mkdirSync(outputDir, { recursive: true });
-        
+
         // Remove all files in the output directory
-        fs.readdirSync(outputDir).forEach((file) => {
+        fs.readdirSync(outputDir).forEach(file => {
             fs.unlinkSync(`${outputDir}/${file}`);
         });
     }
 
     private moveLocalPathToOutPath(localPath: string, outPath: string) {
-        const relativePath = localPath.split(process.cwd() + '/')[1]
+        const relativePath = localPath.split(process.cwd() + '/')[1];
         return fs.promises.copyFile(relativePath, outPath);
     }
 
@@ -31,7 +30,7 @@ export class SaveToOutputDirectory extends Saver<ExecutionResult> {
         const valueCopy = JSON.parse(JSON.stringify(value));
 
         // Also upload all the assets
-        const paths = []
+        const paths = [];
         for (const [label, asset] of Object.entries(value.assets)) {
             let path = `${this.outputDir}/${randomId()}`;
             if (asset.type === 'image') {
@@ -52,13 +51,12 @@ export class SaveToOutputDirectory extends Saver<ExecutionResult> {
         const rawExecutionData = JSON.stringify(valueCopy, null, 2);
         const path = `${this.outputDir}/execution.json`;
         promises.push(this.saveRawToOutPath(rawExecutionData, path));
-    
+
         await Promise.all(promises);
-        const absolutePath = fs.realpathSync(path)
+        const absolutePath = fs.realpathSync(path);
 
         return {
-            accessUrl: absolutePath
+            accessUrl: absolutePath,
         };
-
     }
 }

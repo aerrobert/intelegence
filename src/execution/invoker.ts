@@ -1,6 +1,6 @@
 import { Cache } from './cache';
-import { hash } from '../utils/random'
-import { HyperExecution } from '../framework/hyper-execution';
+import { hash } from '../utils/random';
+import { Execution } from '../framework/execution';
 import { NoCache } from '../implementations/cache/no-cache';
 
 export interface InvokerProps<ResultType> {
@@ -18,23 +18,21 @@ export class Invoker<InputType, ResultType> {
         throw new Error('Not implemented');
     }
 
-    public async invoke(input: InputType, execution: HyperExecution): Promise<ResultType> {
-        const key = hash(this.getName() + JSON.stringify(input))
+    public async invoke(input: InputType, execution: Execution): Promise<ResultType> {
+        const key = hash(this.getName() + JSON.stringify(input));
         const exists = await this.cache.exists(key);
 
         if (exists) {
             execution.tasks.logTask(execution.rootTask, `Cache hit for invoke of '${this.getName()}'`);
             return await this.cache.get(key);
         } else {
-            const result = await execution.tasks.runWithRetries(`Invoke of '${this.getName()}'`, 5, () =>
-                this.onInvoke(input, execution)
-            );
+            const result = await execution.tasks.runWithRetries(`Invoke of '${this.getName()}'`, 5, () => this.onInvoke(input, execution));
             await this.cache.set(key, result);
             return result;
         }
     }
 
-    protected onInvoke(input: InputType, execution: HyperExecution): Promise<ResultType> {
+    protected onInvoke(input: InputType, execution: Execution): Promise<ResultType> {
         throw new Error('Not implemented');
     }
 }
