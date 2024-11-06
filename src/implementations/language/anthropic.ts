@@ -1,30 +1,26 @@
-import { ChatBasedLLMInterface, LLMChatResponse } from '../../interfaces/chat-based-llm';
-import { InvokerProps } from '../../execution/invoker';
-import { ChatContext } from '../../framework/chat-context';
-import { NoCache } from '../cache/no-cache';
+import { LanguageModel, LanguageModelResponse } from '../../interfaces/language';
+import { ChatContext } from '../../utils/chat-context';
 
-export interface AnthropicChatBasedLLMOptions extends InvokerProps<LLMChatResponse> {
+export interface AnthropicLLMOptions {
     apiKey?: string;
     modelId?: string;
 }
 
-export class AnthropicChatBasedLLM extends ChatBasedLLMInterface {
+export class AnthropicLLM extends LanguageModel {
     private modelId = 'claude-3-opus-20240229';
     private apiKey: string;
 
-    constructor(props: AnthropicChatBasedLLMOptions = {}) {
-        super({
-            cache: new NoCache(),
-            ...props,
-        });
-        (this.apiKey = props.apiKey || (process && process.env.ANTHROPIC_API_KEY!)), (this.modelId = props.modelId || this.modelId);
+    constructor(props: AnthropicLLMOptions = {}) {
+        super();
+        this.apiKey = props.apiKey || (process && process.env.ANTHROPIC_API_KEY!);
+        this.modelId = props.modelId || this.modelId;
     }
 
-    protected getName(): string {
+    public override getName(): string {
         return 'anthropic-' + this.modelId;
     }
 
-    protected async onLLMInvoke(context: ChatContext): Promise<LLMChatResponse> {
+    protected override async handleInvoke(context: ChatContext): Promise<LanguageModelResponse> {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             headers: {
                 'Content-Type': 'application/json',

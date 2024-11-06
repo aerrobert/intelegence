@@ -4,7 +4,16 @@ export interface ChatMessage {
 }
 
 export class ChatContext {
-    constructor(private messages: ChatMessage[]) {}
+    constructor(private messages: ChatMessage[] = []) {}
+
+    public static fromStrings(messages: string[] = []): ChatContext {
+        return new ChatContext(
+            messages.map((message, index) => ({
+                text: message,
+                from: index % 2 === 0 ? 'user' : 'bot',
+            }))
+        );
+    }
 
     addMessage(message: ChatMessage): ChatContext {
         return new ChatContext([...this.messages, message]);

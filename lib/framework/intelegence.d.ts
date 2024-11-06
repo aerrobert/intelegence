@@ -1,28 +1,26 @@
-import { Execution } from './execution';
-import { ChatBasedLLMInterface } from '../interfaces/chat-based-llm';
-import { ImageGeneratorAIInterface } from '../interfaces/image-generator';
-import { Saver } from '../execution/saver';
-import { ImageToImageGeneratorAIInterface } from '../interfaces/image-to-image-generator';
-import { Tasks } from './tasks';
+import { LanguageModel } from '../interfaces/language';
 export interface IntelegenceProps {
-    using?: {
-        chatBasedLLM?: ChatBasedLLMInterface;
-        imageGenerator?: ImageGeneratorAIInterface;
-        imageToImageGenerator?: ImageToImageGeneratorAIInterface;
-    };
-    saving?: {
-        executionData?: Saver<any>;
-    };
-    events?: {
-        onTaskEvent?: (taskEvent: any) => void;
-    };
+    language?: LanguageModel;
 }
 export declare class Intelegence {
-    readonly chatBasedLLMInvoker: ChatBasedLLMInterface;
-    readonly imageGeneratorInvoker: ImageGeneratorAIInterface;
-    readonly imageToImageGeneratorInvoker: ImageToImageGeneratorAIInterface;
-    readonly executionDataSaver: Saver<any>;
-    readonly tasks: Tasks;
+    private readonly languageModel;
     constructor(props: IntelegenceProps);
-    begin(): Execution;
+    /**
+     * Utilities
+     */
+    private requireLanguageModel;
+    /**
+     * Language model interfaces
+     */
+    languageAsk(question: string): Promise<string>;
+    languageAskWithFormat({ chat, question, format }: {
+        chat: string[] | undefined;
+        question: string;
+        format: string;
+    }): Promise<any>;
+    languageAskForObjectDelta({ chat, question, object }: {
+        chat: string[] | undefined;
+        question: string;
+        object: any;
+    }): Promise<any>;
 }

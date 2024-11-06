@@ -1,10 +1,14 @@
-import { Intelegence, OpenAIChatBasedLLM } from '../src';
+import { Intelegence } from '../src';
+import { MockedLLM } from '../src/implementations/language/mocked';
 
-const intelegence = new Intelegence({
-    using: {
-        chatBasedLLM: new OpenAIChatBasedLLM(),
-    },
+describe('Intelegence', () => {
+    it('should return "Hello, world!"', async () => {
+        const intelegence = new Intelegence({
+            language: new MockedLLM({
+                responses: ['Hello, world!'],
+            }),
+        });
+        const answer = await intelegence.languageAsk('');
+        expect(answer).toEqual('Hello, world!');
+    });
 });
-
-const answer = await intelegence.begin().consider('Hello, world!');
-expect(answer).toBe('Hello, world!');
