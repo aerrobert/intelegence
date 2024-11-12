@@ -1,13 +1,8 @@
 {
     "name": "@aerrober/intelegence",
     "version": "1.0.0",
-    "main": "./lib/index.js",
-    "files": [
-        "lib/**/*"
-    ],
+    "main": "./src/index.ts",
     "scripts": {
-        "build": "tsc --project tsconfig.build.json",
-        "clean": "rm -rf ./lib/",
         "lint": "eslint ./src/ --fix",
         "test:watch": "jest --watch",
         "test": "jest --coverage",
@@ -31,13 +26,9 @@
         "typescript": "^4.2.4"
     },
     "dependencies": {
-        "@anthropic-ai/sdk": "^0.20.4",
         "@aws-sdk/client-bedrock-runtime": "^3.682.0",
         "@aws-sdk/client-dynamodb": "^3.554.0",
         "@aws-sdk/client-s3": "^3.685.0",
-        "@aws-sdk/lib-dynamodb": "^3.554.0",
-        "axios": "^1.6.8",
-        "flame-logs": "^1.0.0",
-        "openai": "^4.33.1"
+        "@aws-sdk/lib-dynamodb": "^3.554.0"
     }
 }

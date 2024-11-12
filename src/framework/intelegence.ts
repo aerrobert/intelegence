@@ -1,17 +1,24 @@
+import { ImageModel } from '../interfaces/image';
 import { LanguageModel } from '../interfaces/language';
+import { DataStorage } from '../interfaces/storage';
 import { ChatContext } from '../utils/chat-context';
 import { BestEffortJsonParser } from '../utils/parser';
 
 export interface IntelegenceProps {
     language?: LanguageModel;
+    image?: ImageModel;
+    dataStore?: DataStorage;
 }
 
 export class Intelegence {
-    // Models and setup
     private readonly languageModel: LanguageModel | undefined;
+    private readonly imageModel: ImageModel | undefined;
+    private readonly dataStore: DataStorage | undefined;
 
     constructor(props: IntelegenceProps) {
         this.languageModel = props.language;
+        this.imageModel = props.image;
+        this.dataStore = props.dataStore;
     }
 
     /**
@@ -22,6 +29,20 @@ export class Intelegence {
             throw new Error('No language model provided');
         }
         return this.languageModel;
+    }
+
+    private requireImageModel(): ImageModel {
+        if (!this.imageModel) {
+            throw new Error('No image model provided');
+        }
+        return this.imageModel;
+    }
+
+    private requireDataStore(): DataStorage {
+        if (!this.dataStore) {
+            throw new Error('No data store provided');
+        }
+        return this.dataStore;
     }
 
     /**
@@ -85,5 +106,26 @@ export class Intelegence {
         const chatHistory = ChatContext.fromStrings(chat);
         const modelResponse = await model.invoke(chatHistory.addUserMessage(fullPrompt));
         return BestEffortJsonParser(modelResponse.text);
+    }
+
+    /**
+     * Image model interfaces
+     */
+
+    public async imageGenerate(prompt: string) {
+        const model = this.requireImageModel();
+        const modelResponse = await model.generate({ prompt });
+        return modelResponse.imageBase64;
+    }
+
+    public async imageGenerateAndSaveInDataStore(id: string, prompt: string) {
+        const model = this.requireImageModel();
+        const dataStore = this.requireDataStore();
+        const modelResponse = await model.generate({ prompt });
+        await dataStore.set({
+            key: id,
+            value: modelResponse.imageBase64,
+        });
+        return modelResponse.imageBase64;
     }
 }

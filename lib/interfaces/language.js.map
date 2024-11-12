@@ -1,1 +1,0 @@
-{"version":3,"file":"language.js","sourceRoot":"","sources":["../../src/interfaces/language.ts"],"names":[],"mappings":";;;AAMA,MAAa,aAAa;IACf,OAAO;QACV,OAAO,SAAS,CAAC;IACrB,CAAC;IAEM,MAAM,CAAC,KAAkB;QAC5B,OAAO,IAAI,CAAC,YAAY,CAAC,KAAK,CAAC,CAAC;IACpC,CAAC;IAES,YAAY,CAAC,KAAkB;QACrC,MAAM,IAAI,KAAK,CAAC,iBAAiB,CAAC,CAAC;IACvC,CAAC;CACJ;AAZD,sCAYC"}
