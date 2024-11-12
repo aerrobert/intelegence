@@ -122,9 +122,10 @@ export class Intelegence {
         const model = this.requireImageModel();
         const dataStore = this.requireDataStore();
         const modelResponse = await model.generate({ prompt });
+        const buffer = Buffer.from(modelResponse.imageBase64, 'base64');
         await dataStore.set({
-            key: id,
-            value: modelResponse.imageBase64,
+            key: `${id}.png`,
+            value: buffer,
         });
         return modelResponse.imageBase64;
     }

@@ -5,10 +5,10 @@ export class S3DataStorage extends DataStorage {
     private s3Client: S3Client;
     private bucketName: string;
 
-    constructor(bucketName: string, region: string) {
+    constructor({ bucketName, region }: { bucketName: string; region?: string }) {
         super();
         this.bucketName = bucketName;
-        this.s3Client = new S3Client({ region });
+        this.s3Client = new S3Client({ region: region || 'us-west-2' });
     }
 
     public getName(): string {

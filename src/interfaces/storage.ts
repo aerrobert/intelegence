@@ -4,7 +4,7 @@ export interface DataStorageInput {
 
 export interface DataStorageRequest {
     key: string;
-    value: string;
+    value: string | Buffer;
 }
 
 export interface DataStorageResponse {
