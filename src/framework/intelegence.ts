@@ -55,7 +55,7 @@ export class Intelegence {
         return modelResponse.text;
     }
 
-    public async languageAskWithFormat({ chat, question, format }: { chat: string[] | undefined; question: string; format: any }) {
+    public async languageAskWithFormat({ chat, question, format }: { chat?: string[]; question: string; format: any }) {
         const model = this.requireLanguageModel();
         const fullPrompt = `
             I am now asking you the following: 
