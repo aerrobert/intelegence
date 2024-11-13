@@ -1,5 +1,4 @@
-import { LanguageModel, LanguageModelResponse } from '../../interfaces/language';
-import { ChatContext } from '../../utils/chat-context';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
 
 export interface AnthropicLLMOptions {
     apiKey?: string;
@@ -20,7 +19,7 @@ export class AnthropicLLM extends LanguageModel {
         return 'anthropic-' + this.modelId;
     }
 
-    protected override async handleInvoke(context: ChatContext): Promise<LanguageModelResponse> {
+    protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             headers: {
                 'Content-Type': 'application/json',
@@ -30,7 +29,7 @@ export class AnthropicLLM extends LanguageModel {
             method: 'POST',
             body: JSON.stringify({
                 model: this.modelId,
-                messages: context.getMessages().map(message => ({
+                messages: props.chat.getMessages().map(message => ({
                     role: message.from === 'user' ? 'user' : 'assistant',
                     content: message.text,
                 })),

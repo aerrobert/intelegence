@@ -1,5 +1,4 @@
-import { LanguageModel, LanguageModelResponse } from '../../interfaces/language';
-import { ChatContext } from '../../utils/chat-context';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
 
 export interface OpenAIChatBasedLLMOptions {
     apiKey?: string;
@@ -20,7 +19,7 @@ export class OpenAIChatBasedLLM extends LanguageModel {
         return 'openai-' + this.modelId;
     }
 
-    protected override async handleInvoke(context: ChatContext): Promise<LanguageModelResponse> {
+    protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +34,7 @@ export class OpenAIChatBasedLLM extends LanguageModel {
                         role: 'system',
                         content: 'You are a helpful assistant designed to output JSON.',
                     },
-                    ...context.getMessages().map(message => ({
+                    ...props.chat.getMessages().map(message => ({
                         role: message.from === 'user' ? 'user' : 'assistant',
                         content: message.text,
                     })),

@@ -1,13 +1,9 @@
+import { createHash } from 'crypto';
+
 export function randomId() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 export function hash(str: string) {
-    let hash = 0;
-    for (let i = 0, len = str.length; i < len; i++) {
-        const chr = str.charCodeAt(i);
-        hash = (hash << 5) - hash + chr;
-        hash |= 0;
-    }
-    return hash.toString();
+    return createHash('md5').update(str).digest('hex');
 }

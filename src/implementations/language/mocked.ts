@@ -1,5 +1,4 @@
-import { LanguageModel, LanguageModelResponse } from '../../interfaces/language';
-import { ChatContext } from '../../utils/chat-context';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
 
 export interface MockedLLMOptions {
     responses: string[];
@@ -14,7 +13,7 @@ export class MockedLLM extends LanguageModel {
         return 'mocked';
     }
 
-    protected override async handleInvoke(context: ChatContext): Promise<LanguageModelResponse> {
+    protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
         return {
             text: this.props.responses.shift() || '',
         };

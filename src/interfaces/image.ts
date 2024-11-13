@@ -1,5 +1,8 @@
+import { Logger } from '@aerrobert/logger';
+
 export interface ImageModelInput {
     prompt: string;
+    logger: Logger;
 }
 
 export interface ImageModelResponse {
@@ -12,6 +15,7 @@ export class ImageModel {
     }
 
     public generate(input: ImageModelInput): Promise<ImageModelResponse> {
+        input.logger.log(`Generating image for prompt: '${input.prompt}'`);
         return this.handleInvoke(input);
     }
 

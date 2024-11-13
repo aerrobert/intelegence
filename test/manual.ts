@@ -11,4 +11,4 @@ const intelegence = new Intelegence({
     }),
 });
 
-intelegence.imageGenerateAndSaveInDataStore('test-img', 'a cat');
+intelegence.generateImageWithDataStoreCache('test-img', 'a cat');

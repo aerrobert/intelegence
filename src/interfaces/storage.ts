@@ -1,11 +1,19 @@
+import { Logger } from '@aerrobert/logger';
 import { randomId } from '../utils/random';
 
 export interface DataStorageGetInput {
     key: string;
+    logger: Logger;
+}
+
+export interface DataStorageSetRandomInput {
+    logger: Logger;
+    data: string | Buffer;
 }
 
 export interface DataStorageSetInput {
     key: string;
+    logger: Logger;
     value: string | Buffer;
 }
 
@@ -14,22 +22,34 @@ export interface DataStorageGetResponse {
     data?: string;
 }
 
+export interface DataStorageSetResponse {
+    key: string;
+}
+
 export class DataStorage {
     public getName(): string {
         return 'unknown';
     }
 
-    public async setRandomid(data: string | Buffer): Promise<string> {
+    public async setRandomid(data: DataStorageSetRandomInput): Promise<DataStorageSetResponse> {
         const randomid = randomId();
-        await this.set({ key: randomid, value: data });
-        return randomid;
+        return await this.set({
+            key: randomid,
+            logger: data.logger,
+            value: data.data,
+        });
     }
 
     public async get(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
-        return this.handleGet(input);
+        const result = await this.handleGet(input);
+        if (result.exists) {
+            input.logger.log(`Data found in storage for key: ${input.key}`);
+        }
+        return result;
     }
 
-    public async set(input: DataStorageSetInput): Promise<void> {
+    public async set(input: DataStorageSetInput): Promise<DataStorageSetResponse> {
+        input.logger.log(`Setting data in storage: ${input.key}`);
         return this.handleSet(input);
     }
 
@@ -37,7 +57,7 @@ export class DataStorage {
         throw new Error('Not implemented');
     }
 
-    protected handleSet(input: DataStorageSetInput): Promise<void> {
+    protected handleSet(input: DataStorageSetInput): Promise<DataStorageSetResponse> {
         throw new Error('Not implemented');
     }
 }

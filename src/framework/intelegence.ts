@@ -1,48 +1,72 @@
+import { Logger } from '@aerrobert/logger';
 import { ImageModel } from '../interfaces/image';
 import { LanguageModel } from '../interfaces/language';
 import { DataStorage } from '../interfaces/storage';
 import { ChatContext } from '../utils/chat-context';
 import { BestEffortJsonParser } from '../utils/parser';
+import { hash } from '../utils/random';
 
 export interface IntelegenceProps {
     language?: LanguageModel;
     image?: ImageModel;
-    dataStore?: DataStorage;
+    storage?: {
+        forImages?: DataStorage;
+        forLanguage?: DataStorage;
+    };
+    logger?: Logger;
 }
 
 export class Intelegence {
+    private readonly logger: Logger;
     private readonly languageModel: LanguageModel | undefined;
     private readonly imageModel: ImageModel | undefined;
-    private readonly dataStore: DataStorage | undefined;
+    private readonly storage: {
+        forImages?: DataStorage;
+        forLanguage?: DataStorage;
+    } = {};
 
     constructor(props: IntelegenceProps) {
         this.languageModel = props.language;
         this.imageModel = props.image;
-        this.dataStore = props.dataStore;
+        this.storage.forImages = props.storage?.forImages;
+        this.storage.forLanguage = props.storage?.forLanguage;
+        this.logger = props.logger || new Logger({});
     }
 
     /**
      * Utilities
      */
-    private requireLanguageModel(): LanguageModel {
+
+    private requireLanguageModel(command: string): LanguageModel {
         if (!this.languageModel) {
+            this.logger.logError(`No language model provided, but it is required for command: ${command}`);
             throw new Error('No language model provided');
         }
         return this.languageModel;
     }
 
-    private requireImageModel(): ImageModel {
+    private requireImageModel(command: string): ImageModel {
         if (!this.imageModel) {
+            this.logger.logError(`No image model provided, but it is required for command: ${command}`);
             throw new Error('No image model provided');
         }
         return this.imageModel;
     }
 
-    private requireDataStore(): DataStorage {
-        if (!this.dataStore) {
+    private requireImageDataStore(command: string): DataStorage {
+        if (!this.storage.forImages) {
+            this.logger.logError(`No data store provided for images, but it is required for command: ${command}`);
             throw new Error('No data store provided');
         }
-        return this.dataStore;
+        return this.storage.forImages;
+    }
+
+    private requireLanguageDataStore(command: string): DataStorage {
+        if (!this.storage.forLanguage) {
+            this.logger.logError(`No data store provided for languageModel, but it is required for command: ${command}`);
+            throw new Error('No data store provided');
+        }
+        return this.storage.forLanguage;
     }
 
     /**
@@ -50,21 +74,24 @@ export class Intelegence {
      */
 
     public async languageAsk(question: string) {
-        const model = this.requireLanguageModel();
-        const modelResponse = await model.invoke(new ChatContext().addUserMessage(question));
+        const model = this.requireLanguageModel('languageAsk');
+        const chat = new ChatContext().addUserMessage(question);
+        const modelResponse = await model.invoke({ chat, logger: this.logger });
         return modelResponse.text;
     }
 
-    public async languageAskWithFormat({ chat, question, format }: { chat?: string[]; question: string; format: any }) {
-        const model = this.requireLanguageModel();
+    public async languageAskWithFormat({ question, format }: { question: string; format: any }) {
+        const model = this.requireLanguageModel('languageAskWithFormat');
         const fullPrompt = `
             I am now asking you the following: 
             
-            ${prompt}
+            ${question}
 
             ----
 
-            Please respond as a valid JSON string matching this format: ${JSON.stringify(format)}. 
+            Please respond as a valid JSON string matching this format: 
+            
+            ${JSON.stringify(format, null, 2)}
             
             Match the structure provided, a valid response string might be look like: { "answer": "your answer here" }
             Also avoid any characters in your response that may break the JSON format, like double quotes within double quotes.
@@ -73,13 +100,15 @@ export class Intelegence {
             - good format: { "answer": "i said yes to her" }
             - bad format: { answer: "i said "yes" to her" }
         `;
-        const chatHistory = ChatContext.fromStrings(chat);
-        const modelResponse = await model.invoke(chatHistory.addUserMessage(fullPrompt));
+        const chat = new ChatContext().addUserMessage(fullPrompt);
+        const modelResponse = await model.invoke({ chat, logger: this.logger });
+        this.logger.log('languageAskWithFormat completed');
         return BestEffortJsonParser(modelResponse.text);
     }
 
-    public async languageAskForObjectDelta({ chat, question, object }: { chat: string[] | undefined; question: string; object: any }) {
-        const model = this.requireLanguageModel();
+    public async languageAskForObjectDelta({ question, object }: { question: string; object: any }) {
+        this.logger.log(`languageAskForObjectDelta called with question: ${question} and object: ${JSON.stringify(object)}`);
+        const model = this.requireLanguageModel('languageAskForObjectDelta');
         const fullPrompt = `
 
             You have the following object:
@@ -103,8 +132,8 @@ export class Intelegence {
             - bad format: { name: "Jane" }
             
         `;
-        const chatHistory = ChatContext.fromStrings(chat);
-        const modelResponse = await model.invoke(chatHistory.addUserMessage(fullPrompt));
+        const chat = new ChatContext().addUserMessage(fullPrompt);
+        const modelResponse = await model.invoke({ chat, logger: this.logger });
         return BestEffortJsonParser(modelResponse.text);
     }
 
@@ -113,17 +142,41 @@ export class Intelegence {
      */
 
     public async imageGenerate(prompt: string) {
-        const model = this.requireImageModel();
-        const modelResponse = await model.generate({ prompt });
+        const model = this.requireImageModel('imageGenerate');
+        const modelResponse = await model.generate({ prompt, logger: this.logger });
         return modelResponse.imageBase64;
     }
 
-    public async imageGenerateAndSaveInDataStore(prompt: string) {
-        const model = this.requireImageModel();
-        const dataStore = this.requireDataStore();
-        const modelResponse = await model.generate({ prompt });
+    public async generateImageWithDataStoreCache(prompt: string) {
+        const imageModel = this.requireImageModel('generateImageWithDataStoreCache');
+        const dataStore = this.requireImageDataStore('generateImageWithDataStoreCache');
+
+        const imageKey = hash(prompt + imageModel.getName()) + '.png';
+        const existsInDataStore = await dataStore.get({ key: imageKey, logger: this.logger });
+
+        if (existsInDataStore.exists) {
+            return {
+                key: imageKey,
+                imageBase64: existsInDataStore.data as string,
+            };
+        }
+
+        const modelResponse = await imageModel.generate({ prompt, logger: this.logger });
         const buffer = Buffer.from(modelResponse.imageBase64, 'base64');
-        const savedKey = await dataStore.setRandomid(buffer);
-        return savedKey;
+        await dataStore.set({
+            key: imageKey,
+            value: buffer,
+            logger: this.logger,
+        });
+
+        return {
+            key: imageKey,
+            imageBase64: modelResponse.imageBase64,
+        };
+    }
+
+    public async generateImagesWithDataStoreCache(prompts: string[]) {
+        const results = await Promise.all(prompts.map(async prompt => await this.generateImageWithDataStoreCache(prompt)));
+        return results;
     }
 }

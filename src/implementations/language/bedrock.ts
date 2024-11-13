@@ -1,6 +1,5 @@
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime';
-import { LanguageModel, LanguageModelResponse } from '../../interfaces/language';
-import { ChatContext } from '../../utils/chat-context';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
 
 export interface BedrockLLMOptions {
     modelId?: string;
@@ -30,10 +29,10 @@ export class BedrockLLM extends LanguageModel {
         return 'bedrock-' + this.modelId;
     }
 
-    protected override async handleInvoke(context: ChatContext): Promise<LanguageModelResponse> {
+    protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
         const command = new ConverseCommand({
             modelId: this.modelId,
-            messages: context.getMessages().map(message => ({
+            messages: props.chat.getMessages().map(message => ({
                 role: message.from === 'user' ? 'user' : 'assistant',
                 content: [
                     {

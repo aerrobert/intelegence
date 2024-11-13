@@ -35,5 +35,6 @@ module.exports = {
         'node/no-deprecated-api': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/require-await': 'off',
     },
 };

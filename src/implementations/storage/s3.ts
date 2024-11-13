@@ -1,5 +1,11 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { DataStorage, DataStorageGetInput, DataStorageGetResponse, DataStorageSetInput } from '../../interfaces/storage';
+import {
+    DataStorage,
+    DataStorageGetInput,
+    DataStorageGetResponse,
+    DataStorageSetInput,
+    DataStorageSetResponse,
+} from '../../interfaces/storage';
 
 export class S3DataStorage extends DataStorage {
     private s3Client: S3Client;
@@ -28,17 +34,17 @@ export class S3DataStorage extends DataStorage {
             const data = await response.Body.transformToString();
             return { exists: true, data };
         } catch (error) {
-            console.warn(error);
             return { exists: false };
         }
     }
 
-    protected async handleSet(input: DataStorageSetInput): Promise<void> {
+    protected async handleSet(input: DataStorageSetInput): Promise<DataStorageSetResponse> {
         const command = new PutObjectCommand({
             Bucket: this.bucketName,
             Key: input.key,
             Body: input.value,
         });
         await this.s3Client.send(command);
+        return { key: input.key };
     }
 }

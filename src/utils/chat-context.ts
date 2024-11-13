@@ -36,4 +36,8 @@ export class ChatContext {
     getMessages(): ChatMessage[] {
         return this.messages;
     }
+
+    toString(): string {
+        return this.messages.map(message => message.text).join('\n');
+    }
 }
