@@ -118,15 +118,12 @@ export class Intelegence {
         return modelResponse.imageBase64;
     }
 
-    public async imageGenerateAndSaveInDataStore(id: string, prompt: string) {
+    public async imageGenerateAndSaveInDataStore(prompt: string) {
         const model = this.requireImageModel();
         const dataStore = this.requireDataStore();
         const modelResponse = await model.generate({ prompt });
         const buffer = Buffer.from(modelResponse.imageBase64, 'base64');
-        await dataStore.set({
-            key: `${id}.png`,
-            value: buffer,
-        });
-        return modelResponse.imageBase64;
+        const savedKey = await dataStore.setRandomid(buffer);
+        return savedKey;
     }
 }

@@ -1,13 +1,15 @@
-export interface DataStorageInput {
+import { randomId } from '../utils/random';
+
+export interface DataStorageGetInput {
     key: string;
 }
 
-export interface DataStorageRequest {
+export interface DataStorageSetInput {
     key: string;
     value: string | Buffer;
 }
 
-export interface DataStorageResponse {
+export interface DataStorageGetResponse {
     exists: boolean;
     data?: string;
 }
@@ -17,19 +19,25 @@ export class DataStorage {
         return 'unknown';
     }
 
-    public async get(input: DataStorageInput): Promise<DataStorageResponse> {
+    public async setRandomid(data: string | Buffer): Promise<string> {
+        const randomid = randomId();
+        await this.set({ key: randomid, value: data });
+        return randomid;
+    }
+
+    public async get(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
         return this.handleGet(input);
     }
 
-    public async set(input: DataStorageRequest): Promise<void> {
+    public async set(input: DataStorageSetInput): Promise<void> {
         return this.handleSet(input);
     }
 
-    protected handleGet(input: DataStorageInput): Promise<DataStorageResponse> {
+    protected handleGet(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
         throw new Error('Not implemented');
     }
 
-    protected handleSet(input: DataStorageRequest): Promise<void> {
+    protected handleSet(input: DataStorageSetInput): Promise<void> {
         throw new Error('Not implemented');
     }
 }

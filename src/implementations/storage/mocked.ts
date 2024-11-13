@@ -1,4 +1,4 @@
-import { DataStorage, DataStorageInput, DataStorageRequest, DataStorageResponse } from '../../interfaces/storage';
+import { DataStorage, DataStorageGetInput, DataStorageGetResponse, DataStorageSetInput } from '../../interfaces/storage';
 
 interface MockedDataStorageOptions {
     initialData?: Record<string, string>;
@@ -16,7 +16,7 @@ export class MockedDataStorage extends DataStorage {
         return 'mocked-data';
     }
 
-    protected async handleGet(input: DataStorageInput): Promise<DataStorageResponse> {
+    protected async handleGet(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
         const data = this.data[input.key];
         if (data) {
             return { exists: true, data: data as string };
@@ -25,7 +25,7 @@ export class MockedDataStorage extends DataStorage {
         }
     }
 
-    protected async handleSet(input: DataStorageRequest): Promise<void> {
+    protected async handleSet(input: DataStorageSetInput): Promise<void> {
         this.data[input.key] = input.value;
     }
 }
