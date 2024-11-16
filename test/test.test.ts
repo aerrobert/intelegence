@@ -12,9 +12,11 @@ describe('Intelegence', () => {
                 responses: ['a'],
             }),
         });
-        const answer = await intelegence.languageAsk('');
-        expect(answer).toEqual('Hello, world!');
-        const image = await intelegence.imageGenerate('');
-        expect(image).toEqual('a');
+        const answer = await intelegence.ask('');
+        expect(answer).toEqual({
+            text: 'Hello, world!',
+        });
+        const image = await intelegence.imagine('a cat');
+        expect(image).toEqual({ imageBase64: 'a' });
     });
 });
