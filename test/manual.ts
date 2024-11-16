@@ -1,14 +1,9 @@
-import { Intelegence } from '../src';
-import { OpenAIImageModel } from '../src/implementations/images/openai';
-import { S3DataStorage } from '../src/implementations/storage/s3';
+import { ElevenLabsAudioModel, Intelegence } from '../src';
 
 const intelegence = new Intelegence({
-    image: new OpenAIImageModel({
-        apiKey: '',
-    }),
-    dataStore: new S3DataStorage({
-        bucketName: 'aivideogenerator-405505053377-prod-job-data-bucket',
+    audio: new ElevenLabsAudioModel({
+        voiceId: 'XB0fDUnXU5powFXDhCwa',
     }),
 });
 
-intelegence.generateImageWithDataStoreCache('test-img', 'a cat');
+console.dir(await intelegence.speak('how are you today?'));

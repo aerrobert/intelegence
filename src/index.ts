@@ -1,4 +1,6 @@
 export * from './framework/intelegence';
+export * from './implementations/audio/elevenlabs';
+export * from './implementations/audio/mocked';
 export * from './implementations/images/mocked';
 export * from './implementations/images/openai';
 export * from './implementations/language/anthropic';

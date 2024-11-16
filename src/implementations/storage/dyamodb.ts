@@ -27,7 +27,7 @@ export class DynamoDBDataStorage extends DataStorage {
         try {
             const command = new GetCommand({
                 TableName: this.tableName,
-                Key: { key: input.key },
+                Key: { id: input.key },
             });
             const response = await this.dynamoDBClient.send(command);
             if (!response.Item) {
@@ -44,7 +44,7 @@ export class DynamoDBDataStorage extends DataStorage {
         const command = new PutCommand({
             TableName: this.tableName,
             Item: {
-                key: input.key,
+                id: input.key,
                 value: input.value,
             },
         });
