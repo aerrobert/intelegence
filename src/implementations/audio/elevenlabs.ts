@@ -18,7 +18,7 @@ export class ElevenLabsAudioModel extends AudioModel {
         return `elevenlabs-audio-${this.props.voiceId}`;
     }
 
-    protected override async handleInvoke(input: AudioModelInvokeProps): Promise<AudioModelResponse> {
+    protected override async handleSpeak(input: AudioModelInvokeProps): Promise<AudioModelResponse> {
         const options = {
             method: 'POST',
             headers: {
@@ -38,7 +38,8 @@ export class ElevenLabsAudioModel extends AudioModel {
             options
         );
         const id = generationRequest.headers.get('history-item-id');
-        const bodyRaw = await generationRequest.text();
+        const body = await generationRequest.arrayBuffer();
+        const base = new Buffer(body).toString('base64');
 
         const historyItem = await fetch(`https://api.elevenlabs.io/v1/history/${id}`, {
             headers: {
@@ -48,7 +49,7 @@ export class ElevenLabsAudioModel extends AudioModel {
         const json = await historyItem.json();
 
         return {
-            rawAudio: bodyRaw,
+            rawAudio: base,
             alignments: json.alignments.alignment,
         };
     }

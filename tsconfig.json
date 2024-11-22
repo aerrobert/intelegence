@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es2017",
-        "lib": ["ES2020", "dom"],
+        "target": "ES2023",
+        "lib": ["ES2023", "dom"],
         "declaration": true,
         "outDir": "./lib/",
         "strict": true,

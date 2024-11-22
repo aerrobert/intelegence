@@ -13,7 +13,7 @@ export class MockedAudioModel extends AudioModel {
         return 'mocked-audio';
     }
 
-    protected override async handleInvoke(input: AudioModelInvokeProps): Promise<AudioModelResponse> {
+    protected override async handleSpeak(input: AudioModelInvokeProps): Promise<AudioModelResponse> {
         return {
             rawAudio: this.props.responses.shift() || '',
             alignments: {

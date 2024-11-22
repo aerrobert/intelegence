@@ -22,11 +22,11 @@ export class AudioModel {
 
     public async speak(props: AudioModelInvokeProps): Promise<AudioModelResponse> {
         props.logger.debug(`Invoking audio model ${this.getName()}: ${dedent(props.script)}`);
-        const result = await this.handleInvoke(props);
+        const result = await this.handleSpeak(props);
         return result;
     }
 
-    protected handleInvoke(props: AudioModelInvokeProps): Promise<AudioModelResponse> {
+    protected handleSpeak(props: AudioModelInvokeProps): Promise<AudioModelResponse> {
         throw new Error('Not implemented');
     }
 }
