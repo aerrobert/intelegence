@@ -24,7 +24,7 @@ export class LocalDataStorage extends DataStorage {
         try {
             const filePath = path.join(this.storagePath, input.key);
             const data = await fs.promises.readFile(filePath, 'utf-8');
-            return { exists: true, data };
+            return { exists: true, data: data as string };
         } catch (error) {
             return { exists: false };
         }

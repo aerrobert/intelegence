@@ -8,7 +8,7 @@ export interface RunwayOptions {
 export class RunwayVideo extends VideoModel {
     private client: RunwayML;
 
-    constructor(private props: RunwayOptions) {
+    constructor(props: RunwayOptions) {
         super();
         this.client = new RunwayML({
             apiKey: props.apiKey,
