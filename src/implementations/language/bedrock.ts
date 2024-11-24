@@ -16,6 +16,14 @@ export class BedrockLLM extends LanguageModel {
         super();
         this.modelId = props.modelId || 'anthropic.claude-v2';
         this.region = props.region || 'us-west-2';
+        console.log({
+            region: this.region,
+            credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+                sessionToken: process.env.AWS_SESSION_TOKEN || '',
+            },
+        });
         this.client = new BedrockRuntimeClient({
             region: this.region,
             credentials: {
