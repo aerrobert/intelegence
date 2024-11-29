@@ -47,6 +47,8 @@ export async function imageModelCall(props: ImageCallProps) {
 
     if (props.cache) {
         const dataStore = props.intelgence.requireImageDataStore(label);
+        const permalink = dataStore.getPermalink(callKey);
+        modelResponse.cachedUrl = permalink;
         await dataStore.set({
             key: callKey,
             value: JSON.stringify(modelResponse),

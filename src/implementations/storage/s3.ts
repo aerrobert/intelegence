@@ -10,15 +10,21 @@ import {
 export class S3DataStorage extends DataStorage {
     private s3Client: S3Client;
     private bucketName: string;
+    private region: string;
 
     constructor({ bucketName, region }: { bucketName: string; region?: string }) {
         super();
         this.bucketName = bucketName;
-        this.s3Client = new S3Client({ region: region || 'us-west-2' });
+        this.region = region || 'us-west-2';
+        this.s3Client = new S3Client({ region: this.region });
     }
 
     public getName(): string {
         return 'aws-s3';
+    }
+
+    protected async handlePermalink(key: string): Promise<string> {
+        return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
     }
 
     protected async handleGet(input: DataStorageGetInput): Promise<DataStorageGetResponse> {

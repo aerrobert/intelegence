@@ -7,6 +7,7 @@ export interface ImageModelInput {
 
 export interface ImageModelResponse {
     imageBase64: string;
+    cachedUrl?: string;
 }
 
 export class ImageModel {

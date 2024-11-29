@@ -53,6 +53,14 @@ export class DataStorage {
         return this.handleSet(input);
     }
 
+    public getPermalink(key: string): string {
+        return this.handlePermalink(key);
+    }
+
+    protected handlePermalink(key: string): string {
+        throw new Error('Not implemented');
+    }
+
     protected handleGet(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
         throw new Error('Not implemented');
     }
