@@ -23,7 +23,7 @@ export class S3DataStorage extends DataStorage {
         return 'aws-s3';
     }
 
-    protected async handlePermalink(key: string): Promise<string> {
+    protected handlePermalink(key: string): string {
         return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
     }
 
