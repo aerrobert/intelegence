@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "ES2023",
-        "lib": ["ES2023", "dom"],
+        "target": "ESNext",
+        "lib": ["ESNext", "dom"],
         "declaration": true,
         "outDir": "./lib/",
         "strict": true,
@@ -12,5 +12,5 @@
         "moduleResolution": "NodeNext",
         "forceConsistentCasingInFileNames": true
     },
-    "include": ["src/**/*.ts", "user/**/*.ts", "test/**/*.ts"]
+    "include": ["src/**/*.ts", "test/**/*.ts"]
 }
