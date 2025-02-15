@@ -1,6 +1,6 @@
 {
     "name": "@aerrobert/intelegence",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
     "files": [
@@ -14,7 +14,7 @@
         "typecheck": "tsc --noEmit",
         "test-manual": "bun ./test/manual.ts",
         "prepare": "husky install",
-        "version:bump": "npx version-bump-prompt patch",
+        "version:bump": "npx version-bump-prompt patch && git add package.json",
         "precommit": "npm run build && npm run version:bump"
     },
     "devDependencies": {
