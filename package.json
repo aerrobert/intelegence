@@ -14,7 +14,7 @@
         "typecheck": "tsc --noEmit",
         "test-manual": "bun ./test/manual.ts",
         "prepare": "husky install",
-        "version:bump": "npx version-bump-prompt",
+        "version:bump": "npx version-bump-prompt patch",
         "precommit": "npm run build && npm run version:bump"
     },
     "devDependencies": {
