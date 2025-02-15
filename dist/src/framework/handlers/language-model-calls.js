@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formattedLanguageModelCall = exports.languageModelCall = void 0;
+exports.multiToolLanguageModelCall = exports.formattedLanguageModelCall = exports.languageModelCall = void 0;
 const chat_context_1 = require("../../utils/chat-context");
+const json_to_xml_tools_1 = require("../../utils/json-to-xml-tools");
 const parser_1 = require("../../utils/parser");
 const random_1 = require("../../utils/random");
+const xml_parser_1 = require("../../utils/xml-parser");
 /**
  * Makes a call to a language model using the provided properties.
  * @param props - The properties required to make the language model call.
@@ -71,8 +73,11 @@ async function formattedLanguageModelCall(props) {
         Also avoid any characters in your response that may break the JSON format, like double quotes within double quotes.
         Add quotes around keys and values if they are strings, but not within the string itself.
         
-        - good format: { "answer": "i said yes to her" }
-        - bad format: { answer: "i said "yes" to her" }
+        <output-format>
+            { 
+                "${Object.keys(props.formatExample)[0]}": . . . 
+            }
+        </output-format>
     `;
     const modelResponse = await languageModelCall({
         ...props,
@@ -81,9 +86,57 @@ async function formattedLanguageModelCall(props) {
     });
     const jsonData = (0, parser_1.BestEffortJsonParser)(modelResponse.text);
     return {
+        prompt: fullPrompt,
         ...modelResponse,
         parsed: jsonData,
     };
 }
 exports.formattedLanguageModelCall = formattedLanguageModelCall;
+async function multiToolLanguageModelCall(props) {
+    const fullPrompt = `
+${props.chat.toString()}\n\n
+
+## Tools
+
+You have the following tools available to you:
+
+${props.tools
+        .map(tool => `
+### tool: ${tool.name}
+${tool.description}
+\`\`\`xml
+<${tool.name}>
+    ${(0, json_to_xml_tools_1.jsonToXml)(tool.format)}
+</${tool.name}>
+\`\`\`
+`)
+        .join('\n\n')}
+
+## Output Format
+
+Please respond with a collection of tool calls where each tool call is a XML wrapped in a md code block matching the below format:
+
+\`\`\`xml
+<TOOLNAME>
+    <parameter1>value1</parameter1>
+    <parameter2>value2</parameter2>
+</TOOLNAME>
+\`\`\`
+
+You can and should make many tool calls. You can also intersperse your responses with natural language. Write your thoughts, call tools, think some more, call more tools, ect.
+You perform best when you do not hold back and call as many tools as you think are relevant. The xml will be parsed out automatically so don't worry about it.
+`.trim();
+    const modelResponse = await languageModelCall({
+        label: 'multiToolLanguageModelCall',
+        ...props,
+        chat: new chat_context_1.ChatContext().addUserMessage(fullPrompt),
+    });
+    const xmlData = (0, xml_parser_1.parseOutSimpleXml)(modelResponse.text);
+    return {
+        prompt: fullPrompt,
+        ...modelResponse,
+        parsed: xmlData,
+    };
+}
+exports.multiToolLanguageModelCall = multiToolLanguageModelCall;
 //# sourceMappingURL=language-model-calls.js.map

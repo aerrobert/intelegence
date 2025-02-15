@@ -8,7 +8,12 @@ import { VideoModel } from '../interfaces/video';
 import { ChatContext } from '../utils/chat-context';
 import { AssignAudioModelProps, audioModelCall } from './handlers/audio-model-calls';
 import { AssignImageModelProps, imageModelCall } from './handlers/image-model-calls';
-import { AssignLanguageModelProps, formattedLanguageModelCall, languageModelCall } from './handlers/language-model-calls';
+import {
+    AssignLanguageModelProps,
+    formattedLanguageModelCall,
+    languageModelCall,
+    multiToolLanguageModelCall,
+} from './handlers/language-model-calls';
 import { musicModelCall } from './handlers/music-model-calls';
 import { AssignVideoModelProps, videoModelCall } from './handlers/video-model-calls';
 
@@ -166,6 +171,18 @@ export class Intelegence {
         });
     }
 
+    public async askWithTools(
+        question: string,
+        tools: { name: string; description: string; format: any }[],
+        props: AssignLanguageModelProps = {}
+    ) {
+        return multiToolLanguageModelCall({
+            intelgence: this,
+            chat: new ChatContext().addUserMessage(question),
+            tools,
+            ...props,
+        });
+    }
     /**
      * Image model interfaces
      */

@@ -123,6 +123,14 @@ class Intelegence {
             ...props,
         });
     }
+    async askWithTools(question, tools, props = {}) {
+        return (0, language_model_calls_1.multiToolLanguageModelCall)({
+            intelgence: this,
+            chat: new chat_context_1.ChatContext().addUserMessage(question),
+            tools,
+            ...props,
+        });
+    }
     /**
      * Image model interfaces
      */

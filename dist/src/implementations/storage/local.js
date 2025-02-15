@@ -51,6 +51,7 @@ class LocalDataStorage extends storage_1.DataStorage {
     }
     async handleSet(input) {
         const filePath = path.join(this.storagePath, input.key);
+        await fs_1.default.promises.mkdir(path.dirname(filePath), { recursive: true });
         await fs_1.default.promises.writeFile(filePath, input.value, 'utf-8');
         return { key: input.key };
     }

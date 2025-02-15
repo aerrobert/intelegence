@@ -24,7 +24,7 @@ export class LocalDataStorage extends DataStorage {
         try {
             const filePath = path.join(this.storagePath, input.key);
             const data = await fs.promises.readFile(filePath, 'utf-8');
-            return { exists: true, data: data as string };
+            return { exists: true, data: data };
         } catch (error) {
             return { exists: false };
         }
@@ -32,6 +32,7 @@ export class LocalDataStorage extends DataStorage {
 
     protected async handleSet(input: DataStorageSetInput): Promise<DataStorageSetResponse> {
         const filePath = path.join(this.storagePath, input.key);
+        await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
         await fs.promises.writeFile(filePath, input.value, 'utf-8');
         return { key: input.key };
     }

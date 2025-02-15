@@ -1,7 +1,9 @@
 import { LanguageModelResponse } from '../../interfaces/language';
 import { ChatContext } from '../../utils/chat-context';
+import { jsonToXml } from '../../utils/json-to-xml-tools';
 import { BestEffortJsonParser } from '../../utils/parser';
 import { hash } from '../../utils/random';
+import { parseOutSimpleXml } from '../../utils/xml-parser';
 import { Intelegence } from '../intelegence';
 
 export interface AssignLanguageModelProps {
@@ -63,6 +65,14 @@ export interface FormattedLanguageModelCallProps extends LanguageCallProps {
     formatExample: any;
 }
 
+export interface ToolsLanguageModelCallProps extends LanguageCallProps {
+    tools: {
+        name: string;
+        description: string;
+        format: any;
+    }[];
+}
+
 /**
  * Makes a formatted call to a language model using the provided properties.
  * @template T - The expected type of the parsed JSON response.
@@ -91,8 +101,11 @@ export async function formattedLanguageModelCall<T>(props: FormattedLanguageMode
         Also avoid any characters in your response that may break the JSON format, like double quotes within double quotes.
         Add quotes around keys and values if they are strings, but not within the string itself.
         
-        - good format: { "answer": "i said yes to her" }
-        - bad format: { answer: "i said "yes" to her" }
+        <output-format>
+            { 
+                "${Object.keys(props.formatExample)[0]}": . . . 
+            }
+        </output-format>
     `;
     const modelResponse = await languageModelCall({
         ...props,
@@ -101,7 +114,59 @@ export async function formattedLanguageModelCall<T>(props: FormattedLanguageMode
     });
     const jsonData = BestEffortJsonParser(modelResponse.text);
     return {
+        prompt: fullPrompt,
         ...modelResponse,
         parsed: jsonData as T,
+    };
+}
+
+export async function multiToolLanguageModelCall(props: ToolsLanguageModelCallProps) {
+    const fullPrompt = `
+${props.chat.toString()}\n\n
+
+## Tools
+
+You have the following tools available to you:
+
+${props.tools
+    .map(
+        tool => `
+### tool: ${tool.name}
+${tool.description}
+\`\`\`xml
+<${tool.name}>
+    ${jsonToXml(tool.format)}
+</${tool.name}>
+\`\`\`
+`
+    )
+    .join('\n\n')}
+
+## Output Format
+
+Please respond with a collection of tool calls where each tool call is a XML wrapped in a md code block matching the below format:
+
+\`\`\`xml
+<TOOLNAME>
+    <parameter1>value1</parameter1>
+    <parameter2>value2</parameter2>
+</TOOLNAME>
+\`\`\`
+
+You can and should make many tool calls. You can also intersperse your responses with natural language. Write your thoughts, call tools, think some more, call more tools, ect.
+You perform best when you do not hold back and call as many tools as you think are relevant. The xml will be parsed out automatically so don't worry about it.
+`.trim();
+
+    const modelResponse = await languageModelCall({
+        label: 'multiToolLanguageModelCall',
+        ...props,
+        chat: new ChatContext().addUserMessage(fullPrompt),
+    });
+
+    const xmlData = parseOutSimpleXml(modelResponse.text);
+    return {
+        prompt: fullPrompt,
+        ...modelResponse,
+        parsed: xmlData,
     };
 }

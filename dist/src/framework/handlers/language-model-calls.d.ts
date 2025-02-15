@@ -25,6 +25,13 @@ export declare function languageModelCall(props: LanguageCallProps): Promise<Lan
 export interface FormattedLanguageModelCallProps extends LanguageCallProps {
     formatExample: any;
 }
+export interface ToolsLanguageModelCallProps extends LanguageCallProps {
+    tools: {
+        name: string;
+        description: string;
+        format: any;
+    }[];
+}
 /**
  * Makes a formatted call to a language model using the provided properties.
  * @template T - The expected type of the parsed JSON response.
@@ -40,4 +47,10 @@ export interface FormattedLanguageModelCallProps extends LanguageCallProps {
 export declare function formattedLanguageModelCall<T>(props: FormattedLanguageModelCallProps): Promise<{
     parsed: T;
     text: string;
+    prompt: string;
+}>;
+export declare function multiToolLanguageModelCall(props: ToolsLanguageModelCallProps): Promise<{
+    parsed: import("../../utils/xml-parser").XmlNode[];
+    text: string;
+    prompt: string;
 }>;

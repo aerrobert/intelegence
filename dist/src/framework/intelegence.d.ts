@@ -54,6 +54,16 @@ export declare class Intelegence {
     askWithFormat<T>(question: string, formatExample: any, props?: AssignLanguageModelProps): Promise<{
         parsed: T;
         text: string;
+        prompt: string;
+    }>;
+    askWithTools(question: string, tools: {
+        name: string;
+        description: string;
+        format: any;
+    }[], props?: AssignLanguageModelProps): Promise<{
+        parsed: import("../utils/xml-parser").XmlNode[];
+        text: string;
+        prompt: string;
     }>;
     /**
      * Image model interfaces

@@ -34,7 +34,7 @@
         "node": ">=18.0.0"
     },
     "peerDependencies": {
-        "@aerrobert/logger": "github:eric-aerrober/logger",
+        "@aerrobert/logger": "github:aerrobert/logger",
         "@aws-sdk/client-bedrock-runtime": "^3.682.0",
         "@aws-sdk/client-dynamodb": "^3.554.0",
         "@aws-sdk/client-s3": "^3.685.0",
