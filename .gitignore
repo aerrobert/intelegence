@@ -121,3 +121,4 @@ store
 test/ignore.ts
 .DS_Store
 test/manual.ts
+dist

@@ -51,4 +51,8 @@ export class DynamoDBDataStorage extends DataStorage {
         await this.dynamoDBClient.send(command);
         return { key: input.key };
     }
+
+    protected handlePermalink(key: string): string {
+        throw new Error('Method not implemented.');
+    }
 }

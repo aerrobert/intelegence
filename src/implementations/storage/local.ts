@@ -20,6 +20,10 @@ export class LocalDataStorage extends DataStorage {
         return 'local-storage';
     }
 
+    protected handlePermalink(key: string): string {
+        return path.join(this.storagePath, key);
+    }
+
     protected async handleGet(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
         try {
             const filePath = path.join(this.storagePath, input.key);

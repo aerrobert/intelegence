@@ -1,7 +1,7 @@
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime';
-import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelProps, LanguageModelResponse } from '../../interfaces/language';
 
-export interface BedrockLLMOptions {
+export interface BedrockLLMOptions extends LanguageModelProps {
     modelId?: string;
     region?: string;
     apiKey?: string;
@@ -13,7 +13,7 @@ export class BedrockLLM extends LanguageModel {
     private region: string;
 
     constructor(props: BedrockLLMOptions = {}) {
-        super();
+        super(props);
         this.modelId = props.modelId || 'anthropic.claude-v2';
         this.region = props.region || 'us-west-2';
         this.client = new BedrockRuntimeClient({
@@ -39,7 +39,7 @@ export class BedrockLLM extends LanguageModel {
         });
         const response = await this.client.send(command);
         return {
-            text: response.output!.message!.content![0]!.text || '',
+            response: response.output!.message!.content![0]!.text || '',
         };
     }
 }

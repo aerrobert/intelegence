@@ -15,7 +15,7 @@ export class MockedLLM extends LanguageModel {
 
     protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
         return {
-            text: this.props.responses.shift() || '',
+            response: this.props.responses.shift() || '',
         };
     }
 }

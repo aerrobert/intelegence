@@ -6,9 +6,9 @@ export function BestEffortJsonParser(input: string) {
         return JSON.parse(json);
     } catch (e) {
         try {
-            return eval('(' + json + ')' );
+            return eval('(' + json + ')');
         } catch (e) {
-            return undefined
+            return undefined;
         }
     }
 }

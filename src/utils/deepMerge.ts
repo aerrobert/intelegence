@@ -10,10 +10,10 @@ export function deepMergeOnto(target: any, source: any) {
         return source;
     }
     if (target === undefined && source !== undefined) {
-        return JSON.parse(JSON.stringify(source))
+        return JSON.parse(JSON.stringify(source));
     }
     if (source === undefined) {
-        return target
+        return target;
     }
 
     // We are merging two arrays, just return a deep copy of the source array

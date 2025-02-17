@@ -1,6 +1,6 @@
-import { ImageModel, ImageModelInput, ImageModelResponse } from '../../interfaces/image';
+import { ImageModel, ImageModelInput, ImageModelResponse, ImageModelProps } from '../../interfaces/image';
 
-export interface OpenAIImageModelOptions {
+export interface OpenAIImageModelOptions extends ImageModelProps {
     apiKey?: string;
     modelId?: string;
 }
@@ -10,8 +10,8 @@ export class OpenAIImageModel extends ImageModel {
     private apiKey: string;
 
     constructor(props: OpenAIImageModelOptions = {}) {
-        super();
-        this.apiKey = props.apiKey || (process && process.env.OpenAI_API_KEY!);
+        super(props);
+        this.apiKey = props.apiKey || (process && process.env.OPENAI_API_KEY) || '';
         this.modelId = props.modelId || this.modelId;
     }
 

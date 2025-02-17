@@ -22,6 +22,10 @@ export class MockedDataStorage extends DataStorage {
         return 'mocked-data';
     }
 
+    protected handlePermalink(key: string): string {
+        throw new Error('Method not implemented.');
+    }
+
     protected async handleGet(input: DataStorageGetInput): Promise<DataStorageGetResponse> {
         const data = this.data[input.key];
         if (data) {

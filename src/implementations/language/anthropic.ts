@@ -1,6 +1,7 @@
-import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelProps, LanguageModelResponse } from '../../interfaces/language';
+import axios from 'axios';
 
-export interface AnthropicLLMOptions {
+export interface AnthropicLLMOptions extends LanguageModelProps {
     apiKey?: string;
     modelId?: string;
 }
@@ -10,7 +11,7 @@ export class AnthropicLLM extends LanguageModel {
     private apiKey: string;
 
     constructor(props: AnthropicLLMOptions = {}) {
-        super();
+        super(props);
         this.apiKey = props.apiKey || (process && process.env.ANTHROPIC_API_KEY!);
         this.modelId = props.modelId || this.modelId;
     }
@@ -20,27 +21,27 @@ export class AnthropicLLM extends LanguageModel {
     }
 
     protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': this.apiKey,
-                'anthropic-version': '2023-06-01',
-            },
-            method: 'POST',
-            body: JSON.stringify({
+        const response = await axios.post(
+            'https://api.anthropic.com/v1/messages',
+            {
                 model: this.modelId,
                 messages: props.chat.getMessages().map(message => ({
                     role: message.from === 'user' ? 'user' : 'assistant',
                     content: message.text,
                 })),
                 max_tokens: 3000,
-            }),
-        });
-
-        const responseJson = await response.json();
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': this.apiKey,
+                    'anthropic-version': '2023-06-01',
+                },
+            }
+        );
 
         return {
-            text: responseJson.content[0].text,
+            response: response.data.content[0].text,
         };
     }
 }

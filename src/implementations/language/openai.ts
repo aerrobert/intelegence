@@ -1,6 +1,7 @@
-import { LanguageModel, LanguageModelInvokeProps, LanguageModelResponse } from '../../interfaces/language';
+import { LanguageModel, LanguageModelInvokeProps, LanguageModelProps, LanguageModelResponse } from '../../interfaces/language';
+import axios from 'axios';
 
-export interface OpenAIChatBasedLLMOptions {
+export interface OpenAIChatBasedLLMOptions extends LanguageModelProps {
     apiKey?: string;
     modelId?: string;
 }
@@ -10,8 +11,8 @@ export class OpenAIChatBasedLLM extends LanguageModel {
     private apiKey: string;
 
     constructor(props: OpenAIChatBasedLLMOptions = {}) {
-        super();
-        this.apiKey = props.apiKey || (process && process.env.OpenAI_API_KEY!);
+        super(props);
+        this.apiKey = props.apiKey || (process && process.env.OPENAI_API_KEY) || '';
         this.modelId = props.modelId || this.modelId;
     }
 
@@ -20,13 +21,9 @@ export class OpenAIChatBasedLLM extends LanguageModel {
     }
 
     protected override async handleInvoke(props: LanguageModelInvokeProps): Promise<LanguageModelResponse> {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${this.apiKey}`,
-            },
-            method: 'POST',
-            body: JSON.stringify({
+        const response = await axios.post(
+            'https://api.openai.com/v1/chat/completions',
+            {
                 model: this.modelId,
                 response_format: { type: 'json_object' },
                 messages: [
@@ -39,13 +36,17 @@ export class OpenAIChatBasedLLM extends LanguageModel {
                         content: message.text,
                     })),
                 ],
-            }),
-        });
-
-        const responseJson = await response.json();
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.apiKey}`,
+                },
+            }
+        );
 
         return {
-            text: responseJson.choices[0].message.content,
+            response: response.data.choices[0].message.content,
         };
     }
 }
